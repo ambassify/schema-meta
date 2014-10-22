@@ -1,37 +1,3 @@
-/*
- TraceKit - Cross brower stack traces - github.com/occ/TraceKit
- MIT license
-*/
-
-/*;(function( global, undefined) {
-
-
-var Meta = {
-	name : 'hello'
-};*/
-
-/*var Meta = function() {
-	console.log('Hello world');
-	return 'hello world';
-};*/
-
-/*Meta.prototype.standardize = function( data ) {
-	data.custom = "blabla";
-	return data;
-}*/
-
-
-
-// Export to global object
-/*if( global.hasOwnProperty('document') && global.hasOwnProperty('location') ) // Instance is a window
-{
-	global.SchemaMeta = Meta;
-} else {
-	global = Meta;
-}
-
-}( exports || window || null ));*/
-
 ;(function (name, context, definition) {
   if (typeof module !== 'undefined' && module.exports) { module.exports = definition(); }
   else if (typeof define === 'function' && define.amd) { define(definition); }
@@ -41,16 +7,17 @@ var Meta = {
 	'use strict';
   
 	var keyMapper = {
-		'givenName': ['firstname', 'first_name', 'fname'],
-		'familyName': ['lastname', 'last_name', 'lname'],
-		'email': ['e-mail','emailadres', 'e-mailaddress', 'mail', 'mailadres', 'emailadres'],
-		'name': ['naam']
+		'givenName': ['firstname', 'fname'],
+		'familyName': ['lastname', 'lname'],
+		'email': ['emailaddress', 'mail', 'mailadres', 'emailadres'],
+		'name': ['naam'],
+		'birthDate': ['birth'],
+		'gender': ['sex']
 	};
 
 	var SchemaMeta = function ( meta ) {
 		this.meta = meta;
 		this.map = this.getKeyMap( keyMapper );
-		console.log(this.map);
 	};
 
 	SchemaMeta.prototype.getNormalized = function() {
@@ -69,12 +36,17 @@ var Meta = {
 	 * @return {string} 
 	 */
 	SchemaMeta.prototype.normalizeKey = function( key ) {
-		var cleanKey = key.toLowerCase();
+		var cleanKey = key.toLowerCase().replace(/[-_]/g, '');
 
-		if( this.map.hasOwnProperty( cleanKey ) )
-			cleanKey = this.map[ cleanKey ];
+		if( this.map.hasOwnProperty( cleanKey ) ) {
+			return this.map[ cleanKey ];
+		} else {
+			// if no matchin key replace is found try do a search for specific parts in the key string
+			// for example searching firstname in fieldfirstname would be a match
+			// make sure to first search for firstname/lastname and if they don't match finally do a search for name
+		}
 
-		return cleanKey;
+		return key;
 	};
 
 	/**
@@ -98,6 +70,19 @@ var Meta = {
 			// Get normalized values
 			normalizedKey = this.normalizeKey( key );
 			normalizedValue = this.normalizeValue( this.meta[ key ] );
+
+			switch( normalizedKey ) 
+			{
+				case 'givenName':
+					normalizedValue = normalizedValue.charAt(0).toUpperCase() + normalizedValue.slice(1); // givenName should always start with a capital letter
+					break;
+				case 'birthDate':
+					normalizedValue = this.normalizeTypeDate( normalizedValue );
+					break;
+				case 'gender':
+					normalizedValue = this.normalizeTypeGender( normalizedValue );
+					break;
+			}
 
 			normalizedMeta[ normalizedKey ] = normalizedValue;
 
@@ -124,6 +109,51 @@ var Meta = {
 			}
 		}
 		return map;
+	};
+
+	/**
+	 * Normalize date input
+	 *
+	 * @param {string} date 
+	 * @return {string} ISO-8601 format YYY-MM-DD conform schema.org
+	 */
+	SchemaMeta.prototype.normalizeTypeDate = function( date )
+	{
+
+		// Check if date contains separators
+		var regex = /[\/-\s]/;
+		if( date.match(regex) ) {
+			var parts = date.split( regex );
+
+			// Reverse order if notation is using d/m/y
+			if( parts[2] > 31 ) {
+				date = parts.reverse().join('-');
+			}
+
+		}
+
+		var dateObject = new Date( date );
+		var year = dateObject.getFullYear();
+		var month = (dateObject.getMonth() + 1); // 0 is januari
+		var day = dateObject.getDate();
+		return dateObject.getFullYear() + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
+
+	};
+
+	SchemaMeta.prototype.normalizeTypeGender = function( gender )
+	{
+
+		// Already normalized
+		if( gender === 'female' && gender === 'male' ) 
+			return gender;
+
+		if( gender === 'f' ) 
+		{
+			return 'female';
+		} else {
+			return 'male';
+		}
+
 	}
 
 	return SchemaMeta;
