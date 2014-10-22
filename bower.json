@@ -4,7 +4,7 @@
   "description": "Convert objects of random meta data into a schema.org standardized data objects.",
   "homepage": "https://github.com/bubobox/schema-meta",
   "main": [
-    "./src/index.js"
+    "./src/SchemaMeta.js"
   ],
   "ignore": [
     "**/.*",
