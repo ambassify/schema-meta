@@ -1,5 +1,5 @@
 var assert = require('assert'),
-	SchemaMeta = require('../src/SchemaMeta.js');
+	SchemaMeta = require('../src/schemameta.js');
 
 describe('SchemaMeta',function(){
 
