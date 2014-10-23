@@ -16,6 +16,12 @@ describe('SchemaMeta',function(){
 		assert.equal(schema.normalizeTypeDate('86 11 4'), '1986-11-04');
 	});
 
+	it( 'Should not keep original value if not normalizable', function() {
+		var schema = new SchemaMeta();
+		assert.equal(schema.normalizeTypeDate('860411'), '860411');
+		console.log(SchemaMeta.test);
+	});
+
 	it( 'Should normalize different key formats', function() {
 		var schema = new SchemaMeta();
 

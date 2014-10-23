@@ -124,6 +124,7 @@
 	 */
 	SchemaMeta.prototype.normalizeTypeDate = function( date )
 	{
+		var originalDate = date;
 
 		// Check if date contains separators
 		var regex = /[\/-\s]/;
@@ -141,8 +142,12 @@
 		var year = dateObject.getFullYear();
 		var month = (dateObject.getMonth() + 1); // 0 is januari
 		var day = dateObject.getDate();
-		return dateObject.getFullYear() + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
 
+		if( !isNaN(year) && !isNaN(year) && !isNaN(year) ) {
+			return dateObject.getFullYear() + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
+		}
+
+		return originalDate;
 	};
 
 	SchemaMeta.prototype.normalizeTypeGender = function( gender )
