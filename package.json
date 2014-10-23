@@ -1,6 +1,6 @@
 {
   "name": "bbbx-schema-meta",
-  "version": "0.1.0",
+  "version": "0.8.0",
   "description": "Convert objects of random meta data into a schema.org standardized data objects.",
   "main": "src/index.js",
   "scripts": {
