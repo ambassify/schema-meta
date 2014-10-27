@@ -1,6 +1,6 @@
 {
   "name": "bbbx-schema-meta",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Convert objects of random meta data into a schema.org standardized data objects.",
   "homepage": "https://github.com/bubobox/schema-meta",
   "main": [

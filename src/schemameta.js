@@ -127,7 +127,7 @@
 		var originalDate = date;
 
 		// Check if date contains separators
-		var regex = /[\/-\s]/;
+		var regex = "/[\/-\s]/";
 		if( date.match(regex) ) {
 			var parts = date.split( regex );
 
