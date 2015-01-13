@@ -5,14 +5,30 @@
   else { context[name] = definition(); }
 })('SchemaMeta', this, function () {
 	'use strict';
-  
+
 	var keyMapper = {
-		'givenName': ['firstname', 'fname'],
-		'familyName': ['lastname', 'lname'],
-		'email': ['emailaddress', 'mail', 'mailadres', 'emailadres'],
-		'name': ['naam'],
-		'birthDate': ['birth'],
-		'gender': ['sex']
+		'givenName': ['firstname', 'fname', 'voornam', 'voornaam', '1stname', 'prenom'],
+		'familyName': ['lastname', 'lname', 'familienaam', 'anaam'],
+		'email': ['emailaddress', 'mail', 'mailadres', 'emailadres' ],
+		'name': ['name', 'naam', 'nom'],
+		'birthDate': ['geboortejaar', 'birthday', 'birthdate', 'birth'],
+		'gender': ['sexe', 'geslacht', 'sex'],
+		'telephone': ['phone', 'telefoon', 'telnr'],
+		'worksFor': ['company'],
+		'language': ['taal'],
+		'image': ['thumb'],
+
+		'facebookId': [ 'facebook_id' ],
+		'twitterId': [ 'twitter_id' ],
+		
+		'streetAddress': [ 'adress', 'adres', 'address' ],
+		'postalCode': [ 'zipcode', 'postalcode', 'zip', 'postcode' ],
+		'addressLocality': [ 'woonplaats', 'hometown', 'city', 'gemeente' ],
+		'addressRegion': [ 'province' ]
+	};
+
+	var _isArray = Array.isArray ? Array.isArray : function(arg) {
+		return Object.prototype.toString.call(arg) === '[object Array]';
 	};
 
 	var SchemaMeta = function ( meta ) {
@@ -60,7 +76,34 @@
 	 * @param {string} value 
 	 * @return {string} 
 	 */
-	SchemaMeta.prototype.normalizeValue = function( value ) {
+	SchemaMeta.prototype.normalizeValue = function( key, value ) {
+
+		if ( _isArray(value) ) {
+
+			var all = [];
+
+			for (var i = 0; i < value.length; i++) {
+				all = all.concat(this.normalizeValue( key, value[i] ));
+			}
+
+			return all;
+		}
+
+		switch( key ) 
+		{
+			case 'givenName':
+			case 'familyName':
+			case 'name':
+				value = value.charAt(0).toUpperCase() + value.slice(1); // givenName should always start with a capital letter
+				break;
+			case 'birthDate':
+				value = this.normalizeTypeDate( value );
+				break;
+			case 'gender':
+				value = this.normalizeTypeGender( value );
+				break;
+		}
+
 		return value;
 	};
 
@@ -74,23 +117,20 @@
 
 			// Get normalized values
 			normalizedKey = this.normalizeKey( key );
-			normalizedValue = this.normalizeValue( this.meta[ key ] );
-
-			switch( normalizedKey ) 
-			{
-				case 'givenName':
-					normalizedValue = normalizedValue.charAt(0).toUpperCase() + normalizedValue.slice(1); // givenName should always start with a capital letter
-					break;
-				case 'birthDate':
-					normalizedValue = this.normalizeTypeDate( normalizedValue );
-					break;
-				case 'gender':
-					normalizedValue = this.normalizeTypeGender( normalizedValue );
-					break;
-			}
+			normalizedValue = this.normalizeValue( normalizedKey, this.meta[key]);
 
 			normalizedMeta[ normalizedKey ] = normalizedValue;
+		}
 
+		// name -> familyName IF givenName + name is known but familyName not (common occurence : name + fistname forms)
+		var nameMeta = {};
+		nameMeta.name = normalizedMeta.name ? normalizedMeta.name : '';
+		nameMeta.givenName = normalizedMeta.givenName ? normalizedMeta.givenName : '';
+		nameMeta.familyName = normalizedMeta.familyName ? normalizedMeta.familyName : '';
+
+		if (nameMeta.givenName.length && nameMeta.name.length && !nameMeta.familyName.length) {
+			normalizedMeta.familyName = nameMeta.name;
+			delete normalizedMeta.name;
 		}
 
 		return normalizedMeta;
@@ -106,6 +146,8 @@
 		var map = {};
 		for( var key in keyMapper ) 
 		{
+			map[key.toLowerCase()] = key;
+
 			var searchArray = keyMapper[ key ];
 			for( var idx in searchArray ) 
 			{
