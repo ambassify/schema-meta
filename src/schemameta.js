@@ -84,10 +84,22 @@
 			var all = [];
 
 			for (var i = 0; i < value.length; i++) {
+
+				var value = this.normalizeValue( key, value[i] );
+
+				if (typeof value === 'undefined') {
+					continue;
+				}
+
 				all = all.concat(this.normalizeValue( key, value[i] ));
 			}
 
 			return all;
+		}
+
+		// undefined, null, NaN, empty strings
+		if (!value && value !== false && value !== 0) {
+			return;
 		}
 
 		switch( key ) 
@@ -119,6 +131,10 @@
 			// Get normalized values
 			normalizedKey = this.normalizeKey( key );
 			normalizedValue = this.normalizeValue( normalizedKey, this.meta[key]);
+
+			if (typeof normalizedValue === 'undefined' || (_isArray(normalizedValue) && !normalizedValue.length)) {
+				continue;
+			}
 
 			normalizedMeta[ normalizedKey ] = normalizedValue;
 		}
