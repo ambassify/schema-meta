@@ -9,6 +9,7 @@
 	var keyMapper = {
 		'givenName': ['firstname', 'fname', 'voornam', 'voornaam', '1stname', 'prenom'],
 		'familyName': ['lastname', 'lname', 'familienaam', 'anaam'],
+		'nickname': ['username', 'screenname', 'user_name'],
 		'email': ['emailaddress', 'mail', 'mailadres', 'emailadres' ],
 		'name': ['name', 'naam', 'nom'],
 		'birthDate': ['geboortejaar', 'birthday', 'birthdate', 'birth'],
@@ -23,7 +24,7 @@
 		
 		'streetAddress': [ 'adress', 'adres', 'address' ],
 		'postalCode': [ 'zipcode', 'postalcode', 'zip', 'postcode' ],
-		'addressLocality': [ 'woonplaats', 'hometown', 'city', 'gemeente' ],
+		'addressLocality': [ 'woonplaats', 'hometown', 'city', 'gemeente', 'location' ],
 		'addressRegion': [ 'province' ]
 	};
 
