@@ -85,13 +85,13 @@
 
 			for (var i = 0; i < value.length; i++) {
 
-				var value = this.normalizeValue( key, value[i] );
+				var normalized = this.normalizeValue( key, value[i] );
 
-				if (typeof value === 'undefined') {
+				if (typeof normalized === 'undefined') {
 					continue;
 				}
 
-				all = all.concat(this.normalizeValue( key, value[i] ));
+				all = all.concat(normalized);
 			}
 
 			return all;
